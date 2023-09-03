@@ -237,19 +237,30 @@ int main()
 
     // Debug
     // Using the amount of perople and amount of relationships print everything
-    for (int a = 0; a < personCount; a++)
+    /* for (int a = 0; a < personCount; a++)
     {
         printf("%s---------------\n", persons[a].subject);
         for (int b = 0; b < persons[a].relationshipCount; b++)
         {
             printf("%s %d\n", persons[a].relationships[b].target, persons[a].relationships[b].weight);
         }
-    }
+    } */
+
     // -------
     // SORTING
     // -------
-    int counter = 0;
-    while (counter < 1)
+    // Find the person who should be last
+    char lastPerson[32];
+    strcpy(lastPerson,persons[personCount].subject);
+    for (int i = personCount-2; i > 0; i--)
+    {
+        if(strcmp(lastPerson,persons[i].subject) < 0)
+        {
+            strcpy(lastPerson,persons[i].subject);
+        }
+    }
+    
+    while (1)
     {
         // Find the index of the first person who comes after the last person in alphabetical order
         int sortedIndex = 0;
@@ -294,7 +305,7 @@ int main()
         {
             strcpy(persons[i].subject, persons[i - 1].subject);
             persons[i].relationshipCount = persons[i - 1].relationshipCount;
-            for (int j = 0; j < movePerson.relationshipCount; j++)
+            for (int j = 0; j < persons[i-1].relationshipCount; j++)
             {
                 strcpy(persons[i].relationships[j].target, persons[i - 1].relationships[j].target);
                 persons[i].relationships[j].weight = persons[i - 1].relationships[j].weight;
@@ -307,30 +318,11 @@ int main()
             strcpy(persons[sortedIndex].relationships[i].target, movePerson.relationships[i].target);
             persons[sortedIndex].relationships[i].weight = movePerson.relationships[i].weight;
         }
-        // int notSorted = 0;
-        // for (int i = 1; i < personCount; i++)
-        // {
-        //     if (strcmp(persons[i].subject, persons[i - 1].subject) > 0)
-        //     {
-        //         notSorted = 1;
-        //     }
-        // }
-        // if (notSorted == 0)
-        // {
-        //     break;
-        // }
-        
-        // Debug
-        // Using the amount of perople and amount of relationships print everything
-        for (int a = 0; a < personCount; a++)
+
+        if (strcmp(persons[personCount-1].subject,lastPerson) == 0)
         {
-            printf("%s---------------\n", persons[a].subject);
-            for (int b = 0; b < persons[a].relationshipCount; b++)
-            {
-                printf("%s %d\n", persons[a].relationships[b].target, persons[a].relationships[b].weight);
-            }
+            break;
         }
-        counter++;
     }
 
     /* // --------------
@@ -369,13 +361,13 @@ int main()
 
     // Debug
     // Using the amount of perople and amount of relationships print everything
-    /* for (int a = 0; a < personCount; a++)
+    for (int a = 0; a < personCount; a++)
     {
         printf("%s---------------\n", persons[a].subject);
         for (int b = 0; b < persons[a].relationshipCount; b++)
         {
             printf("%s %d\n", persons[a].relationships[b].target, persons[a].relationships[b].weight);
         }
-    } */
+    }
     return 0;
 }
