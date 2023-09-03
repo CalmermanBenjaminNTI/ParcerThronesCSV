@@ -1,20 +1,21 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 
-struct relationship
+struct Relationship
 {
     char target[32];
     int weight;
 };
 
-struct person
+struct Person
 {
     char subject[32];
     int relationshipCount;
-    struct relationship relationships[64];
+    struct Relationship relationships[64];
 };
 
-struct person persons[128];
+struct Person persons[128];
 
 int intParse(char str[], int arrayLength)
 {
@@ -271,18 +272,10 @@ int main()
                 sortedIndex = i;
                 break;
             }
-        }/* 
-        printf("Copied %s %d to movePerson\n", persons[(personCount-1)].relationships[i].target, persons[(personCount-1)].relationships[i].weight); */
-
-        printf("\n%s\nRelations to be copied:\n", persons[(personCount-1)].subject);
-        for (int i = 0; i < persons[(personCount-1)].relationshipCount; i++)
-        {
-            printf("%s\n", persons[(personCount-1)].relationships[i].target);
         }
         
-
         // Save the last person in a temporary struct
-        struct person movePerson;
+        struct Person movePerson;
         // Copy the name
         strcpy(movePerson.subject, persons[(personCount - 1)].subject);
         // Copy the relationship count
@@ -294,11 +287,12 @@ int main()
             movePerson.relationships[i].weight = persons[(personCount - 1)].relationships[i].weight;
         }
 
-        printf("\nMovePerson: %s\nTarget Index: %d\nBetween: %s and %s\nRelationship count: %d\n", movePerson.subject, sortedIndex,persons[sortedIndex-1].subject, persons[sortedIndex].subject, movePerson.relationshipCount);
-        for (int i = 0; i < movePerson.relationshipCount; i++)
-        {
-            printf("%d %s %d\n",i,movePerson.relationships[i].target,movePerson.relationships[i].weight);
-        }
+        // Debug
+        // printf("\nMovePerson: %s\nTarget Index: %d\nBetween: %s and %s\nRelationship count: %d\n", movePerson.subject, sortedIndex,persons[sortedIndex-1].subject, persons[sortedIndex].subject, movePerson.relationshipCount);
+        // for (int i = 0; i < movePerson.relationshipCount; i++)
+        // {
+        //    printf("%d %s %d\n",i,movePerson.relationships[i].target,movePerson.relationships[i].weight);
+        // }
 
         // From the bottom move all persons down one step until the spot movePerson is going is cleared
         for (int i = (personCount - 1); i > sortedIndex; i--)
@@ -311,6 +305,8 @@ int main()
                 persons[i].relationships[j].weight = persons[i - 1].relationships[j].weight;
             }
         }
+
+        // Insert move person into their spot
         strcpy(persons[sortedIndex].subject, movePerson.subject);
         persons[sortedIndex].relationshipCount = movePerson.relationshipCount;
         for (int i = 0; i < movePerson.relationshipCount; i++)
@@ -319,55 +315,117 @@ int main()
             persons[sortedIndex].relationships[i].weight = movePerson.relationships[i].weight;
         }
 
+        // Check if the alphabetically last person is last
         if (strcmp(persons[personCount-1].subject,lastPerson) == 0)
         {
             break;
         }
     }
+    for (int i = 0; i < personCount; i++)
+    {
+        for (int j = 0; j < persons[i].relationshipCount; j++)
+        {
+            int indexHighest = j;
+            for (int k = j; k < persons[i].relationshipCount; k++)
+            {
+                if (persons[i].relationships[k].weight > indexHighest)
+                    indexHighest = k;
+            }
+            if (indexHighest > j)
+            {
+                struct Relationship moveRelationship;
+                strcpy(moveRelationship.target,persons[i].relationships[indexHighest].target);
+                moveRelationship.weight = persons[i].relationships[indexHighest].weight;
+                for (int k = indexHighest; k > j; k--)
+                {
+                    strcpy(persons[i].relationships[k].target,persons[i].relationships[k-1].target);
+                    persons[i].relationships[k].weight = persons[i].relationships[k-1].weight;
+                }
+                strcpy(persons[i].relationships[j].target,moveRelationship.target);
+                persons[i].relationships[j].weight = moveRelationship.weight;
+            }
+        }
+    }
+    
 
-    /* // --------------
+    // --------------
     // USER INTERFACE
     // --------------
     char input = ' ';
     personIndex = 0;
+    bool relationshipMode = false;
     while (input != 'q' && input != 'Q')
     {
-        printf("\n%c", '\n');
-        for (int i = -2; i < 3; i++)
+        // Display help screen
+        if (relationshipMode == false)
         {
-            printf("%c%s\n",
-                   i == 0 ? '>' : ' ',
-                   personIndex + i >= 0 ? (personIndex + i < personCount ? persons[personIndex + i].subject : "") : "");
+            puts("\nWelcome to the thrones.csv parser\nOptions:\n(L)ist: show a list of all characters.\n(R)elationships: Toggle relationship mode.\n(Q)uit: Quits the program.");
+        }
+        else
+        {
+            for (int i = -2; i < 3; i++)
+            {
+                printf("%c%s\n",
+                    i == 0 ? '>' : ' ',
+                    personIndex + i >= 0 ? (personIndex + i < personCount ? persons[personIndex + i].subject : "") : "");
+            }
         }
         scanf("%c", &input);
         fflush(stdin);
 
-        if ((input == 'w' || input == 'W') && personIndex > 0)
-            personIndex--;
-        if ((input == 's' || input == 'S') && personIndex < personCount - 1)
-            personIndex++;
-        if (input == 'd' || input == 'D')
+        if (relationshipMode)
         {
-            printf("Relationships for %s-------\n", persons[personIndex].subject);
-
-            for (int i = 0; i < persons[personIndex].relationshipCount; i++)
+            if (input == 'l' || input == 'L')
             {
-                printf("%d %s\n", persons[personIndex].relationships[i].weight, persons[personIndex].relationships[i].target);
+                printf("Relationships for %s\n", persons[personIndex].subject);
+
+                for (int i = 0; i < persons[personIndex].relationshipCount; i++)
+                {
+                    printf("%d %s\n", persons[personIndex].relationships[i].weight, persons[personIndex].relationships[i].target);
+                }
+                puts("\n");
             }
-            scanf("%c", &input);
-            fflush(stdin);
+            else
+            {
+                if ((input == 'b' || input == 'B') && personIndex > 0)
+                    personIndex--;
+                else
+                {
+                    if (personIndex < personCount - 1)
+                        personIndex++;
+                }
+            }
         }
-    } */
+        else
+        {
+            if (input == 'l' || input == 'L')
+            {
+                for (int i = 0; i < personCount; i++)
+                {
+                    printf("%s\n",persons[i].subject);
+                }
+            }
+        }
+
+        if (input == 'r' || input == 'R')
+        {
+            relationshipMode = !relationshipMode;
+            if (relationshipMode)
+            {
+                puts("\nRelationship mode toggled.\nOptions:\n(R)elationships: Toggle relationship mode.\n(Enter): Move down the list.\n(B)ack: go back upwards in the list.\n(L)ist: List the relationships for the current character.\n(Q)uit: Quit the program.\n");
+            }
+        }
+    }
 
     // Debug
     // Using the amount of perople and amount of relationships print everything
-    for (int a = 0; a < personCount; a++)
+    /* for (int a = 0; a < personCount; a++)
     {
         printf("%s---------------\n", persons[a].subject);
         for (int b = 0; b < persons[a].relationshipCount; b++)
         {
             printf("%s %d\n", persons[a].relationships[b].target, persons[a].relationships[b].weight);
         }
-    }
+    } */
     return 0;
 }
