@@ -321,14 +321,14 @@ int main()
             break;
         }
     }
-    /* for (int i = 0; i < personCount; i++)
+    for (int i = 0; i < personCount; i++)
     {
         for (int j = 0; j < persons[i].relationshipCount; j++)
         {
             int indexHighest = j;
             for (int k = j; k < persons[i].relationshipCount; k++)
             {
-                if (persons[i].relationships[k].weight > indexHighest)
+                if (persons[i].relationships[k].weight > persons[i].relationships[indexHighest].weight)
                     indexHighest = k;
             }
             if (indexHighest > j)
@@ -345,7 +345,7 @@ int main()
                 persons[i].relationships[j].weight = moveRelationship.weight;
             }
         }
-    } */
+    }
     
 
     // --------------
