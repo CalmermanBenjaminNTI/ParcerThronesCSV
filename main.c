@@ -193,7 +193,7 @@ int main()
         for (int i = 0; i < persons[personIndex].relationshipCount; i++)
         {
             // Check if the relationship target is also a person
-            int personFound = 0;
+            int personFound = -1;
             for (int j = 0; j < personCount; j++)
             {
                 if (strcmp(persons[personIndex].relationships[i].target, persons[j].subject) == 0)
@@ -204,7 +204,7 @@ int main()
             }
             // If not make them a person
             int relationshipFound = 0;
-            if (personFound == 0)
+            if (personFound == -1)
             {
                 strcpy(persons[personCount].subject, persons[personIndex].relationships[i].target);
                 personFound = personCount;
@@ -240,7 +240,7 @@ int main()
     // Using the amount of perople and amount of relationships print everything
     /* for (int a = 0; a < personCount; a++)
     {
-        printf("%s---------------\n", persons[a].subject);
+        printf("%d %s---------------\n", a, persons[a].subject);
         for (int b = 0; b < persons[a].relationshipCount; b++)
         {
             printf("%s %d\n", persons[a].relationships[b].target, persons[a].relationships[b].weight);
@@ -321,7 +321,7 @@ int main()
             break;
         }
     }
-    for (int i = 0; i < personCount; i++)
+    /* for (int i = 0; i < personCount; i++)
     {
         for (int j = 0; j < persons[i].relationshipCount; j++)
         {
@@ -345,7 +345,7 @@ int main()
                 persons[i].relationships[j].weight = moveRelationship.weight;
             }
         }
-    }
+    } */
     
 
     // --------------
@@ -402,7 +402,7 @@ int main()
             {
                 for (int i = 0; i < personCount; i++)
                 {
-                    printf("%s\n",persons[i].subject);
+                    printf("%s\n", persons[i].subject);
                 }
             }
         }
